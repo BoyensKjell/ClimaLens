@@ -1,0 +1,10 @@
+[project]
+name = "climalens"
+version = "0.1.0"
+description = "LLM-based emissions extraction and climate stress testing for European insurers' investment portfolios"
+requires-python = ">=3.10"
+dependencies = ["pandas>=2.1"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
