@@ -1,0 +1,7 @@
+company,sector,market_value_eur,evic_eur,scope1_tco2e,scope2_tco2e
+Demo Utility AG,Utilities,50000000,40000000000,20000000,1000000
+Demo Chemicals SE,Chemicals,40000000,60000000000,15000000,4000000
+Demo Motors AG,Automotive,30000000,80000000000,2000000,1500000
+Demo Software SE,Technology,60000000,200000000000,30000,40000
+Demo Bank AG,Financials,20000000,30000000000,5000,20000
+Demo Cement AG,Materials,10000000,15000000000,,
