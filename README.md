@@ -1,8 +1,10 @@
 # ClimaLens
 
-**Can AI-extracted emissions data support climate stress tests of European insurers' investment portfolios?**
+**The double climate trap of European reinsurers: do transition risk on the asset side and physical risk on the liability side offset each other across NGFS scenarios?**
 
-European insurers have to measure the climate risk in their investments (Solvency II ORSA, SFDR, CSRD/ESRS E1). That needs Scope 1–3 emissions for every company in the portfolio, which are often buried in long PDF sustainability reports. ClimaLens reads these reports with an LLM, checks the extracted figures the way an auditor would, and runs a carbon price stress test on the portfolio.
+Reinsurers are hit by climate change twice. Their investments lose value when carbon becomes more expensive (transition risk), and their claims rise when natural catastrophes become more frequent and severe (physical risk). Strict climate policy hurts the first, weak climate policy the second. ClimaLens puts both sides of the balance sheet into one figure per scenario, in % of equity, for Munich Re (benchmark: Hannover Re).
+
+The asset side needs Scope 1 and 2 emissions for every company in the portfolio, which are often buried in long PDF sustainability reports. ClimaLens reads these reports with an LLM, checks the extracted figures the way an auditor would, and tests whether AI-extracted data is good enough for the stress test. The goal is an agent that turns a portfolio into a short ORSA climate brief.
 
 Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fall 2026).
 
@@ -11,7 +13,9 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Module | Status |
 | --- | --- |
 | Financed emissions (PCAF) | first version, tested |
-| Carbon price stress test | first version, tested, scenario prices are placeholders |
+| Carbon price stress test (asset side) | first version, tested, scenario prices are placeholders |
+| Natural catastrophe losses (liability side) | first version, tested, scenario multipliers are placeholders |
+| Double climate trap table (both sides, % of equity) | first version, tested |
 | Hand-checked gold dataset | template ready, values to be filled |
 | LLM extraction from PDF reports | planned |
 | Verification step | planned |
@@ -29,7 +33,9 @@ python -m pytest        # run the tests
 
 ```
 src/climalens/portfolio.py    financed emissions and portfolio footprint (PCAF)
-src/climalens/stress_test.py  carbon price stress test
+src/climalens/stress_test.py  carbon price stress test (asset side)
+src/climalens/liability.py    extra natural catastrophe losses (liability side)
+src/climalens/double_trap.py  both sides per scenario in % of equity
 data/gold/                    hand-checked emissions values (the reference)
 data/examples/                demo portfolio, fictional companies and numbers
 tests/                        unit tests
@@ -39,5 +45,7 @@ tests/                        unit tests
 
 - **Financed emissions:** attribution factor = market value / EVIC; financed emissions = attribution factor × (Scope 1 + Scope 2).
 - **Stress test:** extra carbon cost = emissions × price increase × (1 − pass-through); loss in company value = extra cost × EV/EBITDA multiple; the holding loses the same share of its value.
+- **Liability side:** loss in year t = baseline × (1 + trend)^(t − 2025) × climate multiplier; extra loss = that minus the baseline, summed up to 2030; only the share not won back through higher premiums counts (× (1 − repricing share)).
+- **Net effect:** asset loss + liability extra loss, both in % of equity. High in every scenario = double trap; high on only one side per scenario = natural hedge.
 - **Missing data stays missing.** A company that does not report emissions is shown as a data gap, never as zero emissions.
-- The scenario carbon prices in `stress_test.py` are placeholders and will be replaced with NGFS scenario data.
+- The scenario carbon prices in `stress_test.py`, the climate multipliers in `liability.py` and the reinsurer figures in `run_demo.py` are placeholders. They will be replaced with NGFS Phase V data and figures from the Munich Re annual reports.
