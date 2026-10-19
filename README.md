@@ -27,6 +27,7 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 ```bash
 pip install -r requirements.txt
 python run_munichre.py  # double climate trap for Munich Re with real inputs
+python plot_munichre.py # the same results as two slide charts in output/
 python run_demo.py      # demo portfolio of fictional companies
 python run_lab.py       # trace the gold values back to the report texts in data/raw/reports/
 python -m pytest        # run the tests
