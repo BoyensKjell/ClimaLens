@@ -4,6 +4,9 @@ Put the report texts in data/raw/reports/ as <first word of company>_<year>.txt,
 e.g. siemens_2025.txt (data/raw/ is not uploaded to GitHub). Then run:
 
     python run_lab.py
+
+The result is also saved to data/gold/trace_results.csv, so the web app can show
+it without the report texts.
 """
 
 import sys
@@ -30,3 +33,4 @@ table = pd.concat(results, ignore_index=True)
 pd.set_option("display.width", 200)
 print(table.to_string(index=False))
 print(f"\n{table['found'].sum()} of {len(table)} hand-checked values found in the reports.")
+table.to_csv("data/gold/trace_results.csv", index=False)

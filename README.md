@@ -20,12 +20,13 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Tracing gold values back to the report text | first version, tested |
 | LLM extraction from PDF reports | planned |
 | Verification step for LLM values | planned (reuses the tracing check) |
-| Streamlit web app | planned |
+| Streamlit web app | first version: welcome, results, industries, data check, ORSA brief, how it works |
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
+streamlit run app.py    # the web app in the browser
 python run_munichre.py  # double climate trap for Munich Re with real inputs
 python plot_munichre.py # the same results as two slide charts in output/
 python run_demo.py      # demo portfolio of fictional companies
@@ -41,6 +42,8 @@ src/climalens/stress_test.py  carbon price stress test (asset side)
 src/climalens/sector_stress.py the same stress test for a portfolio reported by sector (Munich Re)
 src/climalens/liability.py    extra natural catastrophe losses (liability side)
 src/climalens/double_trap.py  both sides per scenario in % of equity
+src/climalens/munichre.py     Munich Re inputs and base-case assumptions (shared by scripts and app)
+app.py                        Streamlit web app
 src/climalens/trace.py        find each emissions value in the report text (audit-style check)
 data/gold/                    hand-checked emissions values (the reference)
 data/reinsurer/               Munich Re nat-cat losses, equity, sector portfolio and 2030 scenarios
@@ -58,3 +61,7 @@ tests/                        unit tests
 - **Sector portfolio:** Munich Re publishes financed emissions and carrying amounts per GICS industry, not single holdings. The attribution factor cancels out, so loss = financed emissions × price increase × (1 − pass-through) × EV/EBITDA multiple. Loans and bonds take only a share of that loss (debt loss factor), and no loss can exceed the carrying amount.
 - **Scenarios 2030** (`data/reinsurer/scenarios_2030.csv`): carbon prices from NGFS Phase V (US$2010, converted to EUR 2025 with factor 1.30); nat-cat multipliers derived from Swiss Re sigma 4/2021 (+30–63 % weather-related insured losses by 2040). Each row states its source and what is still to be checked.
 - `run_demo.py` still uses fictional numbers and the placeholder scenarios; `run_munichre.py` uses the real inputs.
+
+## Web app online
+
+The app runs on Streamlit Community Cloud straight from this repository: sign in at share.streamlit.io with GitHub, choose *Create app*, repository `BoyensKjell/ClimaLens`, branch `main`, main file `app.py`. Every merge to `main` updates the app. The data check page reads `data/gold/trace_results.csv`, which `python run_lab.py` writes, so the report texts never need to be online.
