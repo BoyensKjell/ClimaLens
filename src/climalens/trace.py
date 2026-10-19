@@ -88,6 +88,19 @@ def find_value(lines: list[str], value_t: float) -> list[int]:
     return [line_no for _, line_no in sorted(hits)]
 
 
+def excerpt(line: str, value_t: float, width: int = 110) -> str:
+    """The part of a long line around the number that matches value_t, so the match is always visible."""
+    line = " ".join(line.split())
+    spans = [(match_precision(m.group(), value_t), m.start(), m.end())
+             for pattern in (SPACED_NUMBER, NUMBER) for m in pattern.finditer(line)]
+    spans = sorted(s for s in spans if s[0] is not None)
+    if len(line) <= width or not spans:
+        return line[:width]
+    _, start, end = spans[0]
+    left = max(0, min(start - (width - (end - start)) // 2, len(line) - width))
+    return ("… " if left else "") + line[left:left + width].strip() + (" …" if left + width < len(line) else "")
+
+
 def trace_company(gold_row: pd.Series, report_text: str) -> pd.DataFrame:
     """One row per gold value: was it found in the report, and on which line."""
     lines = report_text.splitlines()
@@ -103,7 +116,7 @@ def trace_company(gold_row: pd.Series, report_text: str) -> pd.DataFrame:
             "gold_tco2e": value,
             "found": bool(hits),
             "first_line": hits[0] if hits else None,
-            "report_text": lines[hits[0] - 1].strip()[:90] if hits else "",
+            "report_text": excerpt(lines[hits[0] - 1], float(value)) if hits else "",
         })
     out = pd.DataFrame(rows)
     out["first_line"] = out["first_line"].astype("Int64")

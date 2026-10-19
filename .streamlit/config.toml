@@ -1,13 +1,36 @@
+# Light and dark theme. The app follows the system setting; users switch in the menu (⋮ → Settings).
 [theme]
-base = "light"
-primaryColor = "#1d4f7a"
-backgroundColor = "#f7f8fa"
-secondaryBackgroundColor = "#eceff3"
-textColor = "#17202a"
-font = "Public Sans:https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
-borderColor = "#dfe3e8"
+font = "Public Sans:https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap"
 showSidebarBorder = true
 baseRadius = "0.6rem"
+
+[theme.light]
+primaryColor = "#16784f"
+backgroundColor = "#f7f9f8"
+secondaryBackgroundColor = "#eaf0ed"
+textColor = "#16211c"
+borderColor = "#d9e1dd"
+greenColor = "#1f9d63"
+blueColor = "#2a78d6"
+orangeColor = "#eb6834"
+
+[theme.light.sidebar]
+backgroundColor = "#eef3f0"
+secondaryBackgroundColor = "#e1e9e5"
+
+[theme.dark]
+primaryColor = "#3fbf85"
+backgroundColor = "#0f1513"
+secondaryBackgroundColor = "#1a2420"
+textColor = "#e4ebe7"
+borderColor = "#2b3732"
+greenColor = "#3fbf85"
+blueColor = "#5b9ee8"
+orangeColor = "#f08a5d"
+
+[theme.dark.sidebar]
+backgroundColor = "#131b18"
+secondaryBackgroundColor = "#1d2824"
 
 [server]
 headless = true
