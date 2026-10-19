@@ -17,8 +17,9 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Natural catastrophe losses (liability side) | first version, tested, scenario multipliers are placeholders |
 | Double climate trap table (both sides, % of equity) | first version, tested |
 | Hand-checked gold dataset | 5 companies checked (Allianz, BASF, Siemens, SAP, RWE), to be extended to about 40 |
+| Tracing gold values back to the report text | first version, tested |
 | LLM extraction from PDF reports | planned |
-| Verification step | planned |
+| Verification step for LLM values | planned (reuses the tracing check) |
 | Streamlit web app | planned |
 
 ## Quick start
@@ -26,6 +27,7 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 ```bash
 pip install -r requirements.txt
 python run_demo.py      # demo portfolio of fictional companies
+python run_lab.py       # trace the gold values back to the report texts in data/raw/reports/
 python -m pytest        # run the tests
 ```
 
@@ -36,6 +38,7 @@ src/climalens/portfolio.py    financed emissions and portfolio footprint (PCAF)
 src/climalens/stress_test.py  carbon price stress test (asset side)
 src/climalens/liability.py    extra natural catastrophe losses (liability side)
 src/climalens/double_trap.py  both sides per scenario in % of equity
+src/climalens/trace.py        find each emissions value in the report text (audit-style check)
 data/gold/                    hand-checked emissions values (the reference)
 data/examples/                demo portfolio, fictional companies and numbers
 tests/                        unit tests
