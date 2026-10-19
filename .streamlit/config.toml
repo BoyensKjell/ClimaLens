@@ -1,0 +1,16 @@
+[theme]
+base = "light"
+primaryColor = "#1d4f7a"
+backgroundColor = "#f7f8fa"
+secondaryBackgroundColor = "#eceff3"
+textColor = "#17202a"
+font = "Public Sans:https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+borderColor = "#dfe3e8"
+showSidebarBorder = true
+baseRadius = "0.6rem"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
