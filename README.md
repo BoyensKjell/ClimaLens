@@ -40,6 +40,7 @@ src/climalens/liability.py    extra natural catastrophe losses (liability side)
 src/climalens/double_trap.py  both sides per scenario in % of equity
 src/climalens/trace.py        find each emissions value in the report text (audit-style check)
 data/gold/                    hand-checked emissions values (the reference)
+data/reinsurer/               Munich Re natural catastrophe losses and equity, from the annual reports
 data/examples/                demo portfolio, fictional companies and numbers
 tests/                        unit tests
 ```
@@ -51,4 +52,4 @@ tests/                        unit tests
 - **Liability side:** loss in year t = baseline × (1 + trend)^(t − 2025) × climate multiplier; extra loss = that minus the baseline, summed up to 2030; only the share not won back through higher premiums counts (× (1 − repricing share)).
 - **Net effect:** asset loss + liability extra loss, both in % of equity. High in every scenario = double trap; high on only one side per scenario = natural hedge.
 - **Missing data stays missing.** A company that does not report emissions is shown as a data gap, never as zero emissions.
-- The scenario carbon prices in `stress_test.py`, the climate multipliers in `liability.py` and the reinsurer figures in `run_demo.py` are placeholders. They will be replaced with NGFS Phase V data and figures from the Munich Re annual reports.
+- The scenario carbon prices in `stress_test.py`, the climate multipliers in `liability.py` and the reinsurer figures in `run_demo.py` are placeholders. They will be replaced with NGFS Phase V data and the Munich Re figures in `data/reinsurer/`.
