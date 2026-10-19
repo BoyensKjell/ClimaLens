@@ -1,8 +1,8 @@
 company,index,country,report_year,scope1_tco2e,scope2_market_tco2e,scope2_location_tco2e,scope3_tco2e,unit_in_report,source_page,source_quote,report_url,checked_by,check_date,notes
 Allianz SE,DAX 40,DE,2025,30761.4,4882.4,116141.7,83781.5,t,73,"Eigene Geschäftstätigkeit der Allianz, absolute Treibhausgasemissionen",https://share.google/z5sn8Qy5mG88dAe77,Kjell Boyens,2026-10-18,Own operations only; Scope 3 excludes investments (category 15)
-BASF SE,DAX 40,DE,2025,14224000,1857000,3256000,93970000,Mt,195,Treibhausgasemissionen der BASF-Gruppe nach Greenhouse Gas Protocol,https://share.google/RbHOfA5oaEdwJqeEz,Kjell Boyens,2026-10-18,Financial control column
-Siemens AG,DAX 40,DE,2025,288300,71000,633000,159144000,kt,187 bis 188,2.2.6 Kennzahlen,https://share.google/EJ2TVEfvKDotpHchu,Kjell Boyens,2026-10-19,
-SAP SE,DAX 40,DE,2025,92000,1000,90000,12503000,kt,141,"GHG Emissions Scopes 1, 224 (location- and market-based), and 3 Upstream and Downstream (location- and market-based), and Gross GHG Emissions (location- and market-based)",https://share.google/EVFZvgI1wM8MEkPow,Kjell Boyens,2026-10-19,
+BASF SE,DAX 40,DE,2025,15369000,1901000,3300000,93970000,Mt,194 bis 195,Treibhausgasemissionen der BASF-Gruppe nach Greenhouse Gas Protocol,https://share.google/RbHOfA5oaEdwJqeEz,Kjell Boyens,2026-10-19,Financial control column; ESRS gross values (not the target-relevant production subset)
+Siemens AG,DAX 40,DE,2025,288300,70700,633000,159144000,kt,187 bis 188,2.2.6 Kennzahlen,https://share.google/EJ2TVEfvKDotpHchu,Kjell Boyens,2026-10-19,
+SAP SE,DAX 40,DE,2025,92000,1000,90000,6239000,kt,141,"GHG Emissions Scopes 1, 224 (location- and market-based), and 3 Upstream and Downstream (location- and market-based), and Gross GHG Emissions (location- and market-based)",https://share.google/EVFZvgI1wM8MEkPow,Kjell Boyens,2026-10-19,"Scope 3 market-based (location-based: 6,264 kt)"
 Deutsche Telekom AG,DAX 40,DE,2025,,,,,,,,,,,
 RWE AG,DAX 40,DE,2025,51890000,220000,220000,19470000,Mt,114,6. Metriken – THG-Emissionen,https://share.google/qm8j41FIEv6ZqIteW,Kjell Boyens,2026-10-19,
 E.ON SE,DAX 40,DE,2025,,,,,,,,,,,
