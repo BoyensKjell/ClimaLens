@@ -1,0 +1,4 @@
+scenario,carbon_price_2030_usd2010,carbon_price_source,natcat_multiplier_2030,natcat_source,status
+Current Policies,10,"NGFS Phase V narratives (Nov 2025) p. ~34-35: 'up to 10 US$2010/t CO2 by 2030'",1.16,"Swiss Re sigma 4/2021 pp. 19-20: weather-related insured losses +30-63% by 2040 (upper end 63%, linear 2020-2040, 5 of 20 years)",price cited; multiplier is own derivation
+NDCs,36,"IIASA NGFS Phase V database via third-party copy: GCAM 33, MESSAGEix-GLOBIOM 39 (average)",1.12,"Swiss Re sigma 4/2021: middle of the 30-63% range (46%), linear 2020-2040",price to re-check in IIASA database; multiplier is own derivation
+Net Zero 2050,180,"NGFS Phase V narratives (Nov 2025) p. ~10: 100-260 US$2010/t CO2 in 2030 (midpoint)",1.075,"Swiss Re sigma 4/2021: lower end of the 30-63% range, linear 2020-2040",price cited (midpoint of range); multiplier is own derivation
