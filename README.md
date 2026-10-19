@@ -16,7 +16,7 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Carbon price stress test (asset side) | first version, tested, scenario prices are placeholders |
 | Natural catastrophe losses (liability side) | first version, tested, scenario multipliers are placeholders |
 | Double climate trap table (both sides, % of equity) | first version, tested |
-| Hand-checked gold dataset | template ready, values to be filled |
+| Hand-checked gold dataset | 5 companies checked (Allianz, BASF, Siemens, SAP, RWE), to be extended to about 40 |
 | LLM extraction from PDF reports | planned |
 | Verification step | planned |
 | Streamlit web app | planned |
