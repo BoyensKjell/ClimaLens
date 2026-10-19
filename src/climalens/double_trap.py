@@ -27,14 +27,19 @@ def double_trap_table(
     equity_eur: float,
     start_year: int = 2025,
     end_year: int = 2030,
+    asset_summary=stress_summary,
     **stress_kwargs,
 ) -> pd.DataFrame:
-    """One row per scenario pair: asset loss, liability extra loss and net effect in EUR and % of equity."""
+    """One row per scenario pair: asset loss, liability extra loss and net effect in EUR and % of equity.
+
+    asset_summary is stress_summary for a portfolio of single holdings, or
+    sector_stress_summary for a portfolio reported by sector (as Munich Re does).
+    """
     if equity_eur <= 0:
         raise ValueError("equity_eur must be positive")
     rows = []
     for transition, physical in scenarios:
-        asset = stress_summary(portfolio, [transition], base_price_eur, **stress_kwargs).iloc[0]
+        asset = asset_summary(portfolio, [transition], base_price_eur, **stress_kwargs).iloc[0]
         liability = extra_physical_losses(
             baseline_losses_eur, physical, trend, repricing_share, start_year, end_year
         )

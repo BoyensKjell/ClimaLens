@@ -13,10 +13,10 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Module | Status |
 | --- | --- |
 | Financed emissions (PCAF) | first version, tested |
-| Carbon price stress test (asset side) | first version, tested, scenario prices are placeholders |
-| Natural catastrophe losses (liability side) | first version, tested, scenario multipliers are placeholders |
+| Carbon price stress test (asset side) | first version, tested; runs on Munich Re's real sector portfolio with NGFS Phase V 2030 prices |
+| Natural catastrophe losses (liability side) | first version, tested; Munich Re baseline is real, scenario multipliers derived from Swiss Re sigma 4/2021 (to be refined) |
 | Double climate trap table (both sides, % of equity) | first version, tested |
-| Hand-checked gold dataset | 5 companies checked (Allianz, BASF, Siemens, SAP, RWE), to be extended to about 40 |
+| Hand-checked gold dataset | 5 companies checked (Allianz, BASF, Siemens, SAP, RWE), 15 more in progress (20 before the midterm), about 40 later |
 | Tracing gold values back to the report text | first version, tested |
 | LLM extraction from PDF reports | planned |
 | Verification step for LLM values | planned (reuses the tracing check) |
@@ -26,6 +26,7 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 
 ```bash
 pip install -r requirements.txt
+python run_munichre.py  # double climate trap for Munich Re with real inputs
 python run_demo.py      # demo portfolio of fictional companies
 python run_lab.py       # trace the gold values back to the report texts in data/raw/reports/
 python -m pytest        # run the tests
@@ -36,11 +37,12 @@ python -m pytest        # run the tests
 ```
 src/climalens/portfolio.py    financed emissions and portfolio footprint (PCAF)
 src/climalens/stress_test.py  carbon price stress test (asset side)
+src/climalens/sector_stress.py the same stress test for a portfolio reported by sector (Munich Re)
 src/climalens/liability.py    extra natural catastrophe losses (liability side)
 src/climalens/double_trap.py  both sides per scenario in % of equity
 src/climalens/trace.py        find each emissions value in the report text (audit-style check)
 data/gold/                    hand-checked emissions values (the reference)
-data/reinsurer/               Munich Re natural catastrophe losses and equity, from the annual reports
+data/reinsurer/               Munich Re nat-cat losses, equity, sector portfolio and 2030 scenarios
 data/examples/                demo portfolio, fictional companies and numbers
 tests/                        unit tests
 ```
@@ -52,4 +54,6 @@ tests/                        unit tests
 - **Liability side:** loss in year t = baseline × (1 + trend)^(t − 2025) × climate multiplier; extra loss = that minus the baseline, summed up to 2030; only the share not won back through higher premiums counts (× (1 − repricing share)).
 - **Net effect:** asset loss + liability extra loss, both in % of equity. High in every scenario = double trap; high on only one side per scenario = natural hedge.
 - **Missing data stays missing.** A company that does not report emissions is shown as a data gap, never as zero emissions.
-- The scenario carbon prices in `stress_test.py`, the climate multipliers in `liability.py` and the reinsurer figures in `run_demo.py` are placeholders. They will be replaced with NGFS Phase V data and the Munich Re figures in `data/reinsurer/`.
+- **Sector portfolio:** Munich Re publishes financed emissions and carrying amounts per GICS industry, not single holdings. The attribution factor cancels out, so loss = financed emissions × price increase × (1 − pass-through) × EV/EBITDA multiple. Loans and bonds take only a share of that loss (debt loss factor), and no loss can exceed the carrying amount.
+- **Scenarios 2030** (`data/reinsurer/scenarios_2030.csv`): carbon prices from NGFS Phase V (US$2010, converted to EUR 2025 with factor 1.30); nat-cat multipliers derived from Swiss Re sigma 4/2021 (+30–63 % weather-related insured losses by 2040). Each row states its source and what is still to be checked.
+- `run_demo.py` still uses fictional numbers and the placeholder scenarios; `run_munichre.py` uses the real inputs.

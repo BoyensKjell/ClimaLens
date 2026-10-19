@@ -1,0 +1,64 @@
+asset_class,sector_de,sector_en,scope1_financed_tco2e,scope2_financed_tco2e,carrying_amount_meur
+equity,"Öl, Erdgas und nicht erneuerbare Brennstoffe","Oil, gas & consumable fuels",67322,8838,905
+equity,Chemikalien,Chemicals,25079,8419,191
+equity,Baustoffe,Construction materials,20958,1402,25
+equity,Metalle und Bergbau,Metals & mining,26157,7671,134
+equity,Bau- und Ingenieurswesen,Construction & engineering,3461,480,114
+equity,Industriekonglomerate,Industrial conglomerates,1318,537,275
+equity,Kommerzielle Dienstleistungen und Verbrauchsmaterialien,Commercial services & supplies,145210,301,132
+equity,Professionelle Dienstleistungen,Professional services,49,56,72
+equity,Fluggesellschaften: Passagiertransport,Passenger airlines,14151,43,15
+equity,Bodentransport,Ground transportation,1302,823,34
+equity,Transportinfrastruktur,Transportation infrastructure,2276,6920,650
+equity,Nahrungsmittel,Food products,25097,6815,232
+equity,Kapitalmärkte,Capital markets,3473,1212,1182
+equity,Diverse Telekommunikationsdienste,Diversified telecommunication services,492,1919,266
+equity,Stromversorgungsunternehmen,Electric utilities,29291,69053,1330
+equity,Gasversorgungsunternehmen,Gas utilities,5633,315,126
+equity,Multiversorgungsunternehmen,Multi-utilities,34992,6101,500
+equity,Unabhängige Strom- und Erneuerbare-Energie-Produzenten,Independent power & renewable electricity producers,1308493,3827,1101
+equity,Immobilienmanagement und -entwicklung,Real estate management & development,516,1443,333
+equity,Andere,Other (no GICS assignment),667081,196995,8024
+equity,Sonstige GICS,Other GICS industries,50378,25000,12001
+loans,"Öl, Erdgas und nicht erneuerbare Brennstoffe","Oil, gas & consumable fuels",26827,3832,227
+loans,Chemikalien,Chemicals,0,0,0
+loans,Baustoffe,Construction materials,0,0,0
+loans,Metalle und Bergbau,Metals & mining,0,0,0
+loans,Bau- und Ingenieurswesen,Construction & engineering,43254,1554,678
+loans,Industriekonglomerate,Industrial conglomerates,3477,1432,101
+loans,Kommerzielle Dienstleistungen und Verbrauchsmaterialien,Commercial services & supplies,106,256,120
+loans,Professionelle Dienstleistungen,Professional services,9,13,162
+loans,Fluggesellschaften: Passagiertransport,Passenger airlines,0,0,0
+loans,Bodentransport,Ground transportation,29117,5841,558
+loans,Transportinfrastruktur,Transportation infrastructure,8075,12915,1503
+loans,Nahrungsmittel,Food products,0,0,0
+loans,Kapitalmärkte,Capital markets,94,698,232
+loans,Diverse Telekommunikationsdienste,Diversified telecommunication services,749,7093,1139
+loans,Stromversorgungsunternehmen,Electric utilities,10564,448,70
+loans,Gasversorgungsunternehmen,Gas utilities,0,0,0
+loans,Multiversorgungsunternehmen,Multi-utilities,0,0,0
+loans,Unabhängige Strom- und Erneuerbare-Energie-Produzenten,Independent power & renewable electricity producers,225905,6289,1103
+loans,Immobilienmanagement und -entwicklung,Real estate management & development,79775,21818,9635
+loans,Andere,Other (no GICS assignment),0,0,4
+loans,Sonstige GICS,Other GICS industries,32354,3700,821
+bonds,"Öl, Erdgas und nicht erneuerbare Brennstoffe","Oil, gas & consumable fuels",137908,19326,521
+bonds,Chemikalien,Chemicals,253716,49896,361
+bonds,Baustoffe,Construction materials,81677,9501,104
+bonds,Metalle und Bergbau,Metals & mining,72488,17863,187
+bonds,Bau- und Ingenieurswesen,Construction & engineering,2375,223,74
+bonds,Industriekonglomerate,Industrial conglomerates,164862,36435,2018
+bonds,Kommerzielle Dienstleistungen und Verbrauchsmaterialien,Commercial services & supplies,18720,1509,264
+bonds,Professionelle Dienstleistungen,Professional services,17005,11891,848
+bonds,Fluggesellschaften: Passagiertransport,Passenger airlines,135256,210,141
+bonds,Bodentransport,Ground transportation,18290,4693,281
+bonds,Transportinfrastruktur,Transportation infrastructure,5445,1242,303
+bonds,Nahrungsmittel,Food products,10488,5931,278
+bonds,Kapitalmärkte,Capital markets,333261,68973,8069
+bonds,Diverse Telekommunikationsdienste,Diversified telecommunication services,2603,12001,1527
+bonds,Stromversorgungsunternehmen,Electric utilities,341771,26000,1635
+bonds,Gasversorgungsunternehmen,Gas utilities,27886,1968,173
+bonds,Multiversorgungsunternehmen,Multi-utilities,104218,12597,666
+bonds,Unabhängige Strom- und Erneuerbare-Energie-Produzenten,Independent power & renewable electricity producers,202133,9642,760
+bonds,Immobilienmanagement und -entwicklung,Real estate management & development,3323,3593,405
+bonds,Andere,Other (no GICS assignment),0,0,0
+bonds,Sonstige GICS,Other GICS industries,130432,66429,17543
