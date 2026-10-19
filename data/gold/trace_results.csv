@@ -11,9 +11,9 @@ Siemens AG,scope1_tco2e,288300.0,True,10482,"Gesamte Scope 1 THG-Bruttoemissione
 Siemens AG,scope2_market_tco2e,70700.0,True,10491,"Gesamte Scope 2 THG-Bruttoemissionen 633,0 70,7"
 Siemens AG,scope2_location_tco2e,633000.0,True,10491,"Gesamte Scope 2 THG-Bruttoemissionen 633,0 70,7"
 Siemens AG,scope3_tco2e,159144000.0,True,10458,"Gesamte indirekte (Scope 3) THG-Emissionen 179.222 159.144 -30% - -2,7%"
-SAP SE,scope1_tco2e,92000.0,True,5302,3 The 2025 results for each KPI are: Carbon Credits 237 kt of total GHG removed or reduced
+SAP SE,scope1_tco2e,92000.0,True,5302,"… t of total GHG removed or reduced; Gross GHG Emissions (location-based) 6,446 kt; GHG Emissions Scope 1 92 kt;"
 SAP SE,scope2_market_tco2e,1000.0,False,,
-SAP SE,scope2_location_tco2e,90000.0,True,5303,GHG Emissions Scope 2 (location-based) 90 kt; GHG Emissions Scope 2 (market-based) 1 kt; G
+SAP SE,scope2_location_tco2e,90000.0,True,5303,GHG Emissions Scope 2 (location-based) 90 kt; GHG Emissions Scope 2 (market-based) 1 kt; GHG Emissions Scope 3 …
 SAP SE,scope3_tco2e,6239000.0,True,7158,"and Downstream (market-based) 6,239"
 RWE AG,scope1_tco2e,51890000.0,True,6636,"Scope-1-THG-Bruttoemissionen 85,74 51,89 53,24 N/A N/A N/A"
 RWE AG,scope2_market_tco2e,220000.0,True,6639,"Standortbezogene Scope-2-THG-Bruttoemissionen 0,20 0,22 0,39 N/A N/A N/A"
