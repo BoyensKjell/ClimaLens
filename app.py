@@ -19,6 +19,7 @@ import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
 from climalens import munichre  # noqa: E402
+from climalens.hotspots import hotspot_losses  # noqa: E402
 from climalens.sector_stress import run_sector_stress  # noqa: E402
 from climalens.trace import NUMBER, SPACED_NUMBER, match_precision  # noqa: E402
 
@@ -170,7 +171,16 @@ def results() -> pd.DataFrame:
     table = munichre.trap(inp, trend=a["trend"], repricing=a["repricing"], pass_through=a["pass_through"],
                           ev_ebitda_multiple=a["ev_ebitda_multiple"], debt_loss_factor=a["debt_loss_factor"])
     table["carbon_price_eur"] = [p[0].carbon_price_eur for p in inp.pairs]
+    tops = [hotspots(i).sort_values("extra_horizon_eur", ascending=False) for i in range(len(inp.pairs))]
+    table["top_hotspot"] = [h["hotspot"].iloc[0] for h in tops]
+    table["top_hotspot_share"] = [h["extra_horizon_eur"].iloc[0] / h["extra_horizon_eur"].sum() * 100 for h in tops]
     return table
+
+
+def hotspots(scenario_index: int, year: int = 2030) -> pd.DataFrame:
+    """Extra nat-cat losses per hotspot with the current assumptions (hotspots.py)."""
+    a, inp = assumptions(), inputs()
+    return hotspot_losses(inp.hotspots, inp.pairs[scenario_index][1], inp.baseline_eur, year, a["trend"], a["repricing"])
 
 
 def pct(v: float) -> str:
@@ -255,8 +265,10 @@ def trap_chart(t: pd.DataFrame) -> go.Figure:
                 marker=dict(color=ASSETS), customdata=t["asset_loss_eur"] / 1e9,
                 hovertemplate="Investments: %{x:.1f} % of equity<br>EUR %{customdata:.2f} bn<extra></extra>")
     fig.add_bar(y=labels, x=t["liability_pct_equity"], orientation="h", name="Underwriting: extra nat-cat losses 2026-2030",
-                marker=dict(color=NATCAT), customdata=t["liability_extra_eur"] / 1e9,
-                hovertemplate="Nat-cat: %{x:.1f} % of equity<br>EUR %{customdata:.2f} bn after repricing<extra></extra>")
+                marker=dict(color=NATCAT),
+                customdata=list(zip(t["liability_extra_eur"] / 1e9, t["top_hotspot"], t["top_hotspot_share"])),
+                hovertemplate="Nat-cat: %{x:.1f} % of equity<br>EUR %{customdata[0]:.2f} bn after repricing"
+                              "<br>Largest hotspot: %{customdata[1]} (%{customdata[2]:.0f} %)<extra></extra>")
     for y, n in zip(labels, t["net_pct_equity"]):
         fig.add_annotation(x=n, y=y, text=f"<b>{n:.1f} %</b>", showarrow=False, xanchor="left", xshift=8, font=dict(size=16))
     fig.update_layout(barmode="stack", bargap=0.45, height=340, margin=dict(l=10, r=40, t=10, b=10),
@@ -329,6 +341,8 @@ def results_page():
                    "Warming up to 2030 is largely locked in, so the physical side differs little between scenarios.")
     html_block(f'<div class="cl-verdict" style="--c:{color}">{verdict}</div>')
     st.write("")
+    st.page_link(PAGES["hotspots"], label=f"Where the nat-cat losses come from: largest hotspot {cp.top_hotspot}",
+                 icon=":material/public:")
 
     with st.expander("Show the numbers as a table", icon=":material/table:"):
         show = pd.DataFrame({
@@ -380,6 +394,120 @@ def industries_page():
             "Loss (EUR m)": (split["loss_eur"] / 1e6).round(0),
         }).rename(index=str.capitalize)
         st.dataframe(split)
+
+
+YEARS = [2026, 2027, 2028, 2029, 2030, 2035, 2040, 2045, 2050]
+QUAKE = dict(lat=34.6, lon=-117.0, text="Earthquake California")
+LABEL_POS = {"Winter storms Europe": "middle left", "Floods Germany": "bottom center", "Hurricanes North America": "bottom center"}
+
+
+def hotspot_map(h: pd.DataFrame, size_ref_eur: float) -> go.Figure:
+    fig = go.Figure()
+    fig.add_scattergeo(lat=[QUAKE["lat"]], lon=[QUAKE["lon"]], mode="markers", showlegend=False,
+                       marker=dict(size=13, symbol="diamond", color="rgba(128,140,155,.45)",
+                                   line=dict(width=1, color="rgba(128,140,155,.9)")),
+                       hovertemplate="<b>Earthquake California</b><br>Not driven by the climate,<br>"
+                                     "so not part of the climate stress test<extra></extra>")
+    rise = (h["factor_year"] - 1) * 100
+    fig.add_scattergeo(
+        lat=h["lat"], lon=h["lon"], mode="markers+text", text=h["hotspot"], textposition=[LABEL_POS.get(x, "top center") for x in h["hotspot"]],
+        textfont=dict(size=12), showlegend=False,
+        marker=dict(size=h["extra_year_eur"] / 1e6, sizemode="area", sizeref=2 * size_ref_eur / 1e6 / 85 ** 2, sizemin=10,
+                    color=rise, cmin=0, cmax=100, opacity=.9,
+                    colorscale=[[0, "#fbd5bf"], [0.5, "#f08a5d"], [1, "#b5361c"]],
+                    line=dict(width=1.5, color="rgba(255,255,255,.85)"),
+                    colorbar=dict(title=dict(text="Losses vs 2025", side="top"), orientation="h", x=.5, xanchor="center",
+                                  y=-.04, yanchor="top", len=.45, thickness=10, outlinewidth=0,
+                                  tickvals=[0, 50, 100], ticktext=["+0 %", "+50 %", "≥+100 %"])),
+        customdata=list(zip(h["peril"], h["var_mid_meur"], h["weight"] * 100, rise, h["extra_year_eur"] / 1e6)),
+        hovertemplate="<b>%{text}</b> · %{customdata[0]}<br>Munich Re 1-in-200 VaR: EUR %{customdata[1]:,.0f} m "
+                      "(%{customdata[2]:.0f} % weight)<br>Losses vs 2025: +%{customdata[3]:.1f} %"
+                      "<br>Extra loss this year: EUR %{customdata[4]:,.0f} m<extra></extra>")
+    fig.update_geos(projection_type="natural earth", lonaxis_range=[-128, 28], lataxis_range=[14, 64],
+                    showland=True, landcolor="rgba(128,140,155,.16)", showocean=False, showlakes=False,
+                    showcountries=True, countrycolor="rgba(128,140,155,.45)", showcoastlines=True,
+                    coastlinecolor="rgba(128,140,155,.6)", showframe=False, bgcolor="rgba(0,0,0,0)")
+    fig.update_layout(height=470, margin=dict(l=0, r=0, t=0, b=60))
+    return fig
+
+
+def hotspots_page():
+    inp = inputs()
+    page_header("Hotspots", "Analysis · underwriting side",
+                "Where do the extra nat-cat losses come from? The nat-cat result of the stress test, split into the "
+                "peril regions where Munich Re carries its largest climate risks.", NATCAT, VIOLET)
+    assumption_bar()
+    names = [p[0].name for p in inp.pairs]
+    c1, c2 = st.columns([1.1, 1], vertical_alignment="bottom")
+    with c1:
+        choice = st.segmented_control("Scenario", names, default=names[0], key="hotspot_scenario", required=True)
+    with c2:
+        year = st.select_slider("Year", YEARS, value=2030, key="hotspot_year",
+                                format_func=lambda y: str(y) if y <= 2030 else f"{y} (outlook)")
+    i = names.index(choice)
+    h = hotspots(i, year).sort_values("extra_year_eur", ascending=False)
+    # Fixed bubble scale (largest value in 2050 over all scenarios), so the bubbles grow with the slider.
+    outlook = pd.concat([hotspots(j, YEARS[-1]) for j in range(len(names))])
+    size_ref = outlook["extra_year_eur"].max()
+
+    total_year = h["extra_year_eur"].sum()
+    top = h.iloc[0]
+    horizon = h["extra_horizon_eur"].sum()
+    kpis = [
+        (NATCAT, f"Extra nat-cat losses in {year}", f"EUR {total_year / 1e6:,.0f} m", "after repricing, all hotspots together"),
+        (VIOLET, "Largest hotspot", html.escape(top["hotspot"]),
+         f"{top['extra_year_eur'] / total_year * 100:.0f} % of the extra losses in {year}" if total_year > 0 else "no extra losses"),
+        (ASSETS, "Stress test 2026–2030", pct(horizon / inp.equity_eur * 100),
+         "of equity: the same nat-cat bar as on the Results page"),
+    ]
+    html_block('<div class="cl-grid" style="--min:200px">' + "".join(
+        f'<div class="cl-kpi" style="--c:{c}"><div class="lbl">{label}</div><div class="val" style="font-size:1.6rem">{value}</div>'
+        f'<div class="sub">{sub}</div></div>' for c, label, value, sub in kpis) + "</div>")
+    if year > 2030:
+        html_block('<p class="cl-note" style="margin-top:.6rem"><b>Outlook:</b> after 2030 the factors simply continue their '
+                   'straight line. The NGFS scenarios drift further apart after 2030, so read this as a direction, not a forecast.</p>')
+
+    st.plotly_chart(hotspot_map(h, size_ref),
+                    config={"displayModeBar": False, "scrollZoom": False, "topojsonURL": "app/static/"})
+    html_block('<p class="cl-note">Bubble size = extra loss in the chosen year (EUR m). Colour = how much higher the losses '
+               'are than in 2025 because of climate change. Grey diamond: earthquakes are not driven by the climate, so no '
+               'climate scenario changes them.</p>')
+
+    section("Ranking", NATCAT)
+    r = h.iloc[::-1]
+    fig = go.Figure(go.Bar(
+        y=r["hotspot"], x=r["extra_year_eur"] / 1e6, orientation="h", marker_color=NATCAT,
+        text=[f"EUR {v / 1e6:,.0f} m · +{(f - 1) * 100:.1f} %" for v, f in zip(r["extra_year_eur"], r["factor_year"])],
+        textposition="outside", cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>Extra loss: EUR %{x:,.0f} m<extra></extra>"))
+    fig.update_layout(height=280, margin=dict(l=10, r=150, t=10, b=10), xaxis_title=f"Extra nat-cat loss in {year}, EUR m")
+    st.plotly_chart(fig, config={"displayModeBar": False})
+
+    section("How the split works", VIOLET)
+    steps = [
+        ("Weights from Munich Re", "Munich Re reports the 1-in-200-year loss of its five largest climate perils. Their "
+         "shares of the total are the weights."),
+        ("Different climate effects", "Climate change raises some perils much more than others, e.g. floods in Germany "
+         "more than winter storms in Europe. Each hotspot gets its own rise from the literature."),
+        ("Same total", "The regional factors are set so that together they give exactly the global factor of each "
+         "scenario. The hotspots therefore add up to the nat-cat bar of the stress test."),
+    ]
+    html_block('<div class="cl-grid">' + "".join(
+        f'<div class="cl-card" style="--c:{VIOLET}"><span class="cl-num">{n}</span><h4>{t}</h4><p>{x}</p></div>'
+        for n, (t, x) in enumerate(steps, 1)) + "</div>")
+
+    with st.expander("Data and sources", icon=":material/table:"):
+        d = inp.hotspots
+        st.dataframe(pd.DataFrame({
+            "Hotspot": d["hotspot"], "Peril": d["peril"],
+            "VaR 1-in-200 (EUR m)": d["var_mid_meur"], "Weight (%)": (d["weight"] * 100).round(1),
+            "Climate rise of losses (literature)": (d["uplift"] * 100).round(0).astype(int).astype(str) + " %",
+            "Source of the rise": d["uplift_source"], "Status": d["status"],
+        }), hide_index=True)
+        html_block('<p class="cl-note">Limits: Munich Re does not publish its exposure by country, so the map shows peril '
+                   'regions, not exact countries. The VaR describes extreme years, not the average year. Asia and '
+                   'Australia (about 20 % of the reinsurance business) are not split out because Munich Re reports no '
+                   'peril figures for them.</p>')
 
 
 def highlight(quote: str, value_t: float) -> str:
@@ -496,10 +624,10 @@ This section assesses Munich Re's exposure to climate change over the ORSA horiz
 The combined burden ranges from {pct(cp.net_pct_equity)} of group equity under {cp.scenario} to {pct(nz.net_pct_equity)} under {nz.scenario}. Under {nz.scenario} a carbon price of about {nz.carbon_price_eur:.0f} EUR/t reduces the value of the investments by {bn(nz.asset_loss_eur)} ({pct(nz.asset_pct_equity)} of equity). Under {cp.scenario}, extra natural catastrophe losses after repricing reach {bn(cp.liability_extra_eur)} ({pct(cp.liability_pct_equity)} of equity) over five years.
 
 ### Assessment
-Up to 2030 the two risks do not offset each other. Transition risk on the asset side dominates in ambitious policy scenarios, while physical risk grows slowly and differs little between scenarios, because warming up to 2030 is largely locked in. The asset-side risk is concentrated in a few carbon-intensive industries, above all power generation.
+Up to 2030 the two risks do not offset each other. Transition risk on the asset side dominates in ambitious policy scenarios, while physical risk grows slowly and differs little between scenarios, because warming up to 2030 is largely locked in. The asset-side risk is concentrated in a few carbon-intensive industries, above all power generation. On the underwriting side, the largest single source of extra losses is {cp.top_hotspot} ({cp.top_hotspot_share:.0f} % of the extra nat-cat losses under {cp.scenario}).
 
 ### Key assumptions
-{a['pass_through']:.0%} of carbon costs passed on to customers; valuation multiple {a['ev_ebitda_multiple']:g}×; loans and bonds take {a['debt_loss_factor']:.0%} of the shareholder loss; {a['repricing']:.0%} of extra nat-cat losses recovered through repricing; nat-cat trend {a['trend']:.1%} per year. Physical damage to investee companies and effects after 2030 are not yet included.
+{a['pass_through']:.0%} of carbon costs passed on to customers; valuation multiple {a['ev_ebitda_multiple']:g}×; loans and bonds take {a['debt_loss_factor']:.0%} of the shareholder loss; {a['repricing']:.0%} of extra nat-cat losses recovered through repricing; nat-cat trend {a['trend']:.1%} per year. Physical damage to investee companies, earthquakes (not climate-driven) and effects after 2030 are not included.
 """
 
 
@@ -566,6 +694,10 @@ def how_page():
                   annotation_position="top left")
     fig.update_layout(height=260, margin=dict(l=10, r=10, t=10, b=10), yaxis_title="EUR m")
     st.plotly_chart(fig, config={"displayModeBar": False})
+    st.markdown("**Where the losses come from.** Climate change does not raise every peril by the same amount. ClimaLens "
+                "splits the nat-cat result into Munich Re's five largest climate perils, weighted by their 1-in-200-year loss "
+                "from the annual report, and gives each its own climate rise. Together they add up to the same total.")
+    st.page_link(PAGES["hotspots"], label="Open the hotspot map", icon=":material/public:")
 
     section("The three scenarios", VIOLET)
     sc = inp.scenarios.assign(price_eur=lambda d: (d["carbon_price_2030_usd2010"] * munichre.USD2010_TO_EUR2025).round(0))
@@ -584,6 +716,7 @@ def how_page():
     st.markdown("""
 - Physical damage to the companies Munich Re invests in (for example a flooded factory).
 - Effects after 2030, when the physical side grows much faster under Current Policies.
+- Earthquakes, because they are not driven by the climate.
 - Sovereign bonds and real estate, which Munich Re does not report by industry.
 - The nat-cat factors are derived from a Swiss Re study (+30–63 % weather-related insured losses by 2040), not from a catastrophe model.
 """)
@@ -605,18 +738,19 @@ PAGES = {
     "welcome": st.Page(welcome, title="Welcome", icon=":material/home:", default=True),
     "results": st.Page(results_page, title="Results", icon=":material/bar_chart:", url_path="results"),
     "industries": st.Page(industries_page, title="Industries", icon=":material/factory:", url_path="industries"),
+    "hotspots": st.Page(hotspots_page, title="Hotspots", icon=":material/public:", url_path="hotspots"),
     "brief": st.Page(brief_page, title="ORSA brief", icon=":material/description:", url_path="orsa-brief"),
     "how": st.Page(how_page, title="How it works", icon=":material/menu_book:", url_path="how-it-works"),
     "data": st.Page(data_page, title="Data check", icon=":material/fact_check:", url_path="data-check"),
 }
 SECTIONS = {
     "Start": [PAGES["welcome"]],
-    "Analysis": [PAGES["results"], PAGES["industries"], PAGES["brief"]],
+    "Analysis": [PAGES["results"], PAGES["industries"], PAGES["hotspots"], PAGES["brief"]],
     "Method": [PAGES["how"], PAGES["data"]],
 }
 
 if os.environ.get("CLIMALENS_PAGE"):  # render one page without navigation (used by the tests)
-    {"welcome": welcome, "results": results_page, "industries": industries_page, "data": data_page,
+    {"welcome": welcome, "results": results_page, "industries": industries_page, "hotspots": hotspots_page, "data": data_page,
      "brief": brief_page, "how": how_page}[os.environ["CLIMALENS_PAGE"]]()
 else:
     page = st.navigation(SECTIONS)

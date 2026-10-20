@@ -34,6 +34,8 @@ secondaryBackgroundColor = "#1d2824"
 
 [server]
 headless = true
+# Serves static/world_110m.json (map outlines for the Hotspots page) at app/static/.
+enableStaticServing = true
 
 [browser]
 gatherUsageStats = false
