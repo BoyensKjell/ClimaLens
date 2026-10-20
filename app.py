@@ -96,9 +96,10 @@ st.markdown("""
 .cl-brief { font-family: Georgia, "Source Serif 4", serif; font-size: 1.08rem; line-height: 1.65; max-width: 44rem; }
 
 /* assumptions bar */
-.cl-abar { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
-.cl-chip { font-size: .8rem; padding: .2rem .6rem; border-radius: 999px; border: 1px solid rgba(128,140,155,.3); opacity: .85; }
-.cl-chip.on { border-color: var(--c, #eb6834); opacity: 1; font-weight: 600; }
+.cl-abar { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
+.cl-atitle { font-weight: 700; font-size: 1rem; }
+.cl-avals { font-size: .86rem; opacity: .75; margin: .25rem 0 .4rem; }
+.cl-avals span.on { color: color-mix(in srgb, #eb6834 80%, currentColor); font-weight: 700; opacity: 1; }
 .cl-pill { font-size: .75rem; font-weight: 700; padding: .22rem .65rem; border-radius: 999px; letter-spacing: .03em; }
 .cl-pill.base { background: rgba(31,157,99,.16); color: color-mix(in srgb, #1f9d63 75%, currentColor); }
 .cl-pill.custom { background: rgba(235,104,52,.16); color: color-mix(in srgb, #eb6834 75%, currentColor); }
@@ -216,34 +217,41 @@ def section(title: str, color: str = GREEN):
 
 
 def assumption_bar():
-    """The current assumptions as chips, and a button that opens the sliders."""
+    """One panel: the current assumptions in a line, and the sliders when the user opens it."""
     a, diff = assumptions(), changed()
-    chips = [("pass_through", f"Pass-through {a['pass_through']:.0%}"),
-             ("ev_ebitda_multiple", f"EV/EBITDA {a['ev_ebitda_multiple']:g}×"),
-             ("debt_loss_factor", f"Loans & bonds {a['debt_loss_factor']:.0%}"),
-             ("repricing", f"Repricing {a['repricing']:.0%}"),
-             ("trend", f"Nat-cat trend {a['trend']:.1%}")]
+    values = [("pass_through", f"Pass-through {a['pass_through']:.0%}"),
+              ("ev_ebitda_multiple", f"EV/EBITDA {a['ev_ebitda_multiple']:g}×"),
+              ("debt_loss_factor", f"Loans & bonds {a['debt_loss_factor']:.0%}"),
+              ("repricing", f"Repricing {a['repricing']:.0%}"),
+              ("trend", f"Nat-cat trend {a['trend']:.1%}")]
     status = ('<span class="cl-pill base">Base case</span>' if not diff
-              else f'<span class="cl-pill custom">{len(diff)} assumption{"s" if len(diff) > 1 else ""} changed</span>')
-    left, right = st.columns([5, 1.4], vertical_alignment="center")
-    with left:
-        html_block(f'<div class="cl-abar">{status}' + "".join(
-            f'<span class="cl-chip{" on" if k in diff else ""}">{label}</span>' for k, label in chips) + "</div>")
-    with right.popover("Assumptions", icon=":material/tune:", width="stretch"):
-        st.markdown("**Investments**")
-        st.slider("Carbon cost passed on to customers", 0.0, 0.8, step=0.05, key="pass_through", format="percent",
-                  help="Share of the extra carbon cost companies can add to their prices.")
-        st.slider("Valuation multiple (EV/EBITDA)", 4.0, 14.0, step=0.5, key="ev_ebitda_multiple", format="%.1f×",
-                  help="How much company value one euro of extra yearly cost destroys.")
-        st.slider("Loss share for loans and bonds", 0.0, 1.0, step=0.05, key="debt_loss_factor", format="percent",
-                  help="Lenders lose less than shareholders. 30 % = they take 30 % of the shareholder loss.")
-        st.markdown("**Underwriting**")
-        st.slider("Extra nat-cat losses won back via prices", 0.0, 0.9, step=0.05, key="repricing", format="percent",
-                  help="Reinsurers renew most contracts every year and can raise prices.")
-        st.slider("Nat-cat loss trend per year", 0.0, 0.07, step=0.005, key="trend", format="percent",
-                  help="0 % = climate effect only. Swiss Re: 5-7 % a year including growth of insured values.")
-        st.button("Reset to base case", on_click=reset, icon=":material/restart_alt:", width="stretch",
-                  disabled=not diff)
+              else f'<span class="cl-pill custom">{len(diff)} changed</span>')
+    with st.container(border=True):
+        left, right = st.columns([5, 1], vertical_alignment="center")
+        with left:
+            html_block(f'<div class="cl-abar"><span class="cl-atitle">Assumptions</span>{status}</div>'
+                       '<div class="cl-avals">' + " · ".join(
+                           f'<span class="{"on" if k in diff else ""}">{label}</span>' for k, label in values) + "</div>")
+        with right:
+            show = st.toggle("Adjust", key="show_assumptions")
+        if show:
+            inv, uw = st.columns(2, gap="large")
+            with inv:
+                html_block(f'<div class="cl-eyebrow" style="--c:{ASSETS}">Investments</div>')
+                st.slider("Carbon cost passed on to customers", 0.0, 0.8, step=0.05, key="pass_through", format="percent",
+                          help="Share of the extra carbon cost companies can add to their prices.")
+                st.slider("Valuation multiple (EV/EBITDA)", 4.0, 14.0, step=0.5, key="ev_ebitda_multiple", format="%.1f×",
+                          help="How much company value one euro of extra yearly cost destroys.")
+                st.slider("Loss share for loans and bonds", 0.0, 1.0, step=0.05, key="debt_loss_factor", format="percent",
+                          help="Lenders lose less than shareholders. 30 % = they take 30 % of the shareholder loss.")
+            with uw:
+                html_block(f'<div class="cl-eyebrow" style="--c:{NATCAT}">Underwriting</div>')
+                st.slider("Extra nat-cat losses won back via prices", 0.0, 0.9, step=0.05, key="repricing", format="percent",
+                          help="Reinsurers renew most contracts every year and can raise prices.")
+                st.slider("Nat-cat loss trend per year", 0.0, 0.07, step=0.005, key="trend", format="percent",
+                          help="0 % = climate effect only. Swiss Re: 5-7 % a year including growth of insured values.")
+                st.button("Reset to base case", on_click=reset, icon=":material/restart_alt:", width="stretch",
+                          disabled=not diff)
     st.write("")
 
 
@@ -396,38 +404,65 @@ def industries_page():
         st.dataframe(split)
 
 
-YEARS = [2026, 2027, 2028, 2029, 2030, 2035, 2040, 2045, 2050]
+YEARS = list(range(2026, 2051))
 QUAKE = dict(lat=34.6, lon=-117.0, text="Earthquake California")
 LABEL_POS = {"Winter storms Europe": "middle left", "Floods Germany": "bottom center", "Hurricanes North America": "bottom center"}
 
 
-def hotspot_map(h: pd.DataFrame, size_ref_eur: float) -> go.Figure:
+def hotspot_trace(h: pd.DataFrame, size_ref_eur: float) -> go.Scattergeo:
+    rise = (h["factor_year"] - 1) * 100
+    return go.Scattergeo(
+        lat=h["lat"], lon=h["lon"], mode="markers+text", text=h["hotspot"], showlegend=False,
+        textposition=[LABEL_POS.get(x, "top center") for x in h["hotspot"]], textfont=dict(size=13),
+        marker=dict(size=h["extra_year_eur"] / 1e6, sizemode="area", sizeref=2 * size_ref_eur / 1e6 / 90 ** 2, sizemin=10,
+                    color=rise, cmin=0, cmax=100, opacity=.9,
+                    colorscale=[[0, "#fbd5bf"], [0.5, "#f08a5d"], [1, "#b5361c"]],
+                    line=dict(width=1.5, color="rgba(255,255,255,.85)"),
+                    colorbar=dict(title=dict(text="Losses vs 2025", side="top"), orientation="h", x=.5, xanchor="center",
+                                  y=-.02, yanchor="top", len=.4, thickness=10, outlinewidth=0,
+                                  tickvals=[0, 50, 100], ticktext=["+0 %", "+50 %", "≥+100 %"])),
+        customdata=list(zip(h["peril"], h["var_mid_meur"], h["weight"] * 100, rise, h["extra_year_eur"] / 1e6)),
+        hovertemplate="<b>%{text}</b> · %{customdata[0]}<br>Munich Re 1-in-200 VaR: EUR %{customdata[1]:,.0f} m "
+                      "(%{customdata[2]:.0f} % weight)<br>Losses vs 2025: +%{customdata[3]:.1f} %"
+                      "<br>Extra loss this year: EUR %{customdata[4]:,.0f} m<extra></extra>")
+
+
+def hotspot_map(by_year: dict[int, pd.DataFrame], size_ref_eur: float, start_year: int = 2030) -> go.Figure:
+    """Map with one animation frame per year. The year slider and the play button run in the browser,
+    so moving through the years is smooth and does not reload the page."""
     fig = go.Figure()
     fig.add_scattergeo(lat=[QUAKE["lat"]], lon=[QUAKE["lon"]], mode="markers", showlegend=False,
                        marker=dict(size=13, symbol="diamond", color="rgba(128,140,155,.45)",
                                    line=dict(width=1, color="rgba(128,140,155,.9)")),
                        hovertemplate="<b>Earthquake California</b><br>Not driven by the climate,<br>"
                                      "so not part of the climate stress test<extra></extra>")
-    rise = (h["factor_year"] - 1) * 100
-    fig.add_scattergeo(
-        lat=h["lat"], lon=h["lon"], mode="markers+text", text=h["hotspot"], textposition=[LABEL_POS.get(x, "top center") for x in h["hotspot"]],
-        textfont=dict(size=12), showlegend=False,
-        marker=dict(size=h["extra_year_eur"] / 1e6, sizemode="area", sizeref=2 * size_ref_eur / 1e6 / 85 ** 2, sizemin=10,
-                    color=rise, cmin=0, cmax=100, opacity=.9,
-                    colorscale=[[0, "#fbd5bf"], [0.5, "#f08a5d"], [1, "#b5361c"]],
-                    line=dict(width=1.5, color="rgba(255,255,255,.85)"),
-                    colorbar=dict(title=dict(text="Losses vs 2025", side="top"), orientation="h", x=.5, xanchor="center",
-                                  y=-.04, yanchor="top", len=.45, thickness=10, outlinewidth=0,
-                                  tickvals=[0, 50, 100], ticktext=["+0 %", "+50 %", "≥+100 %"])),
-        customdata=list(zip(h["peril"], h["var_mid_meur"], h["weight"] * 100, rise, h["extra_year_eur"] / 1e6)),
-        hovertemplate="<b>%{text}</b> · %{customdata[0]}<br>Munich Re 1-in-200 VaR: EUR %{customdata[1]:,.0f} m "
-                      "(%{customdata[2]:.0f} % weight)<br>Losses vs 2025: +%{customdata[3]:.1f} %"
-                      "<br>Extra loss this year: EUR %{customdata[4]:,.0f} m<extra></extra>")
-    fig.update_geos(projection_type="natural earth", lonaxis_range=[-128, 28], lataxis_range=[14, 64],
-                    showland=True, landcolor="rgba(128,140,155,.16)", showocean=False, showlakes=False,
-                    showcountries=True, countrycolor="rgba(128,140,155,.45)", showcoastlines=True,
-                    coastlinecolor="rgba(128,140,155,.6)", showframe=False, bgcolor="rgba(0,0,0,0)")
-    fig.update_layout(height=470, margin=dict(l=0, r=0, t=0, b=60))
+    fig.add_trace(hotspot_trace(by_year[start_year], size_ref_eur))
+    fig.frames = [go.Frame(name=str(y), data=[hotspot_trace(h, size_ref_eur)], traces=[1]) for y, h in by_year.items()]
+
+    def go_to(name, duration=0):
+        return [name, dict(mode="immediate", frame=dict(duration=duration, redraw=True), transition=dict(duration=0))]
+
+    fig.update_layout(
+        height=640, margin=dict(l=0, r=0, t=86, b=56),
+        sliders=[dict(active=YEARS.index(start_year), x=.17, len=.81, y=1.0, yanchor="bottom", pad=dict(t=0, b=10),
+                      currentvalue=dict(prefix="Year ", font=dict(size=15), xanchor="left"),
+                      ticklen=4, font=dict(size=9), bgcolor="rgba(128,140,155,.25)", bordercolor="rgba(0,0,0,0)",
+                      activebgcolor="#eb6834",
+                      steps=[dict(method="animate", label=str(y),
+                                  args=go_to([str(y)])) for y in YEARS])],
+        updatemenus=[dict(type="buttons", showactive=False, direction="left", x=0, y=1.0, xanchor="left",
+                          yanchor="bottom", pad=dict(t=0, b=14, r=6), bgcolor="rgba(128,140,155,.15)",
+                          bordercolor="rgba(128,140,155,.4)", font=dict(size=13),
+                          buttons=[dict(label="▶ Play", method="animate",
+                                        args=[None, dict(mode="immediate", fromcurrent=True,
+                                                         frame=dict(duration=380, redraw=True), transition=dict(duration=0))]),
+                                   dict(label="❚❚", method="animate", args=[[None], dict(mode="immediate",
+                                        frame=dict(duration=0, redraw=False), transition=dict(duration=0))])])],
+    )
+    fig.update_geos(projection_type="natural earth", lonaxis_range=[-126, 30], lataxis_range=[10, 68],
+                    showland=True, landcolor="rgba(128,140,155,.22)", showocean=False, showlakes=False,
+                    showcountries=True, countrycolor="rgba(128,140,155,.55)", showcoastlines=True,
+                    coastlinecolor="rgba(128,140,155,.7)", showframe=False, bgcolor="rgba(0,0,0,0)")
     return fig
 
 
@@ -438,49 +473,46 @@ def hotspots_page():
                 "peril regions where Munich Re carries its largest climate risks.", NATCAT, VIOLET)
     assumption_bar()
     names = [p[0].name for p in inp.pairs]
-    c1, c2 = st.columns([1.1, 1], vertical_alignment="bottom")
-    with c1:
-        choice = st.segmented_control("Scenario", names, default=names[0], key="hotspot_scenario", required=True)
-    with c2:
-        year = st.select_slider("Year", YEARS, value=2030, key="hotspot_year",
-                                format_func=lambda y: str(y) if y <= 2030 else f"{y} (outlook)")
+    choice = st.segmented_control("Scenario", names, default=names[0], key="hotspot_scenario", required=True)
     i = names.index(choice)
-    h = hotspots(i, year).sort_values("extra_year_eur", ascending=False)
-    # Fixed bubble scale (largest value in 2050 over all scenarios), so the bubbles grow with the slider.
-    outlook = pd.concat([hotspots(j, YEARS[-1]) for j in range(len(names))])
-    size_ref = outlook["extra_year_eur"].max()
+    by_year = {y: hotspots(i, y) for y in YEARS}
+    h, h50 = by_year[2030], by_year[2050]
+    # Fixed bubble scale (largest value in 2050 over all scenarios), so the bubbles grow over the years.
+    size_ref = max(hotspots(j, 2050)["extra_year_eur"].max() for j in range(len(names)))
 
-    total_year = h["extra_year_eur"].sum()
-    top = h.iloc[0]
-    horizon = h["extra_horizon_eur"].sum()
+    top = h.sort_values("extra_horizon_eur", ascending=False).iloc[0]
     kpis = [
-        (NATCAT, f"Extra nat-cat losses in {year}", f"EUR {total_year / 1e6:,.0f} m", "after repricing, all hotspots together"),
+        (NATCAT, "Extra nat-cat losses in 2030", f"EUR {h['extra_year_eur'].sum() / 1e6:,.0f} m",
+         f"after repricing · outlook 2050: EUR {h50['extra_year_eur'].sum() / 1e6:,.0f} m"),
         (VIOLET, "Largest hotspot", html.escape(top["hotspot"]),
-         f"{top['extra_year_eur'] / total_year * 100:.0f} % of the extra losses in {year}" if total_year > 0 else "no extra losses"),
-        (ASSETS, "Stress test 2026–2030", pct(horizon / inp.equity_eur * 100),
+         f"{top['extra_horizon_eur'] / h['extra_horizon_eur'].sum() * 100:.0f} % of the extra losses 2026–2030"),
+        (ASSETS, "Stress test 2026–2030", pct(h["extra_horizon_eur"].sum() / inp.equity_eur * 100),
          "of equity: the same nat-cat bar as on the Results page"),
     ]
     html_block('<div class="cl-grid" style="--min:200px">' + "".join(
         f'<div class="cl-kpi" style="--c:{c}"><div class="lbl">{label}</div><div class="val" style="font-size:1.6rem">{value}</div>'
         f'<div class="sub">{sub}</div></div>' for c, label, value, sub in kpis) + "</div>")
-    if year > 2030:
-        html_block('<p class="cl-note" style="margin-top:.6rem"><b>Outlook:</b> after 2030 the factors simply continue their '
-                   'straight line. The NGFS scenarios drift further apart after 2030, so read this as a direction, not a forecast.</p>')
 
-    st.plotly_chart(hotspot_map(h, size_ref),
+    st.plotly_chart(hotspot_map(by_year, size_ref),
                     config={"displayModeBar": False, "scrollZoom": False, "topojsonURL": "app/static/"})
-    html_block('<p class="cl-note">Bubble size = extra loss in the chosen year (EUR m). Colour = how much higher the losses '
-               'are than in 2025 because of climate change. Grey diamond: earthquakes are not driven by the climate, so no '
-               'climate scenario changes them.</p>')
+    html_block('<p class="cl-note">Press ▶ Play or drag the year. Bubble size = extra loss in that year (EUR m). Colour = how '
+               'much higher the losses are than in 2025 because of climate change. <b>After 2030 is an outlook:</b> the factors '
+               'simply continue their straight line, while the NGFS scenarios drift further apart. Grey diamond: earthquakes '
+               'are not driven by the climate, so no climate scenario changes them.</p>')
 
-    section("Ranking", NATCAT)
-    r = h.iloc[::-1]
-    fig = go.Figure(go.Bar(
-        y=r["hotspot"], x=r["extra_year_eur"] / 1e6, orientation="h", marker_color=NATCAT,
-        text=[f"EUR {v / 1e6:,.0f} m · +{(f - 1) * 100:.1f} %" for v, f in zip(r["extra_year_eur"], r["factor_year"])],
-        textposition="outside", cliponaxis=False,
-        hovertemplate="<b>%{y}</b><br>Extra loss: EUR %{x:,.0f} m<extra></extra>"))
-    fig.update_layout(height=280, margin=dict(l=10, r=150, t=10, b=10), xaxis_title=f"Extra nat-cat loss in {year}, EUR m")
+    section("Ranking: 2030 and outlook 2050", NATCAT)
+    r = h.assign(e50=h50["extra_year_eur"], f50=h50["factor_year"]).sort_values("extra_year_eur")
+    fig = go.Figure()
+    fig.add_bar(y=r["hotspot"], x=r["extra_year_eur"] / 1e6, orientation="h", name="2030", marker_color=NATCAT,
+                text=[f"EUR {v / 1e6:,.0f} m" for v in r["extra_year_eur"]], textposition="outside", cliponaxis=False,
+                hovertemplate="<b>%{y}</b><br>2030: EUR %{x:,.0f} m<extra></extra>")
+    fig.add_bar(y=r["hotspot"], x=r["e50"] / 1e6, orientation="h", name="2050 (outlook)", marker_color="#b5361c",
+                text=[f"EUR {v / 1e6:,.0f} m · +{(f - 1) * 100:.0f} %" for v, f in zip(r["e50"], r["f50"])],
+                textposition="outside", cliponaxis=False,
+                hovertemplate="<b>%{y}</b><br>2050: EUR %{x:,.0f} m<extra></extra>")
+    fig.update_layout(barmode="group", bargap=.3, height=380, margin=dict(l=10, r=150, t=10, b=10),
+                      legend=dict(orientation="h", y=1.08, x=0, traceorder="reversed"),
+                      xaxis_title="Extra nat-cat loss in the year, EUR m")
     st.plotly_chart(fig, config={"displayModeBar": False})
 
     section("How the split works", VIOLET)
