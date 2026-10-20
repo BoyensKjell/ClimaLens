@@ -20,6 +20,7 @@ import streamlit as st  # noqa: E402
 
 from climalens import munichre  # noqa: E402
 from climalens.hotspots import hotspot_losses  # noqa: E402
+from climalens.report import brief_docx  # noqa: E402
 from climalens.sector_stress import run_sector_stress  # noqa: E402
 from climalens.trace import NUMBER, SPACED_NUMBER, match_precision  # noqa: E402
 
@@ -670,7 +671,8 @@ def brief_page():
                 GREEN, VIOLET)
     assumption_bar()
     text = brief_text(t, a, inp)
-    st.download_button("Download as text file", text, file_name="climalens_orsa_brief.md", mime="text/markdown",
+    st.download_button("Download as Word", brief_docx(text, t), file_name="ClimaLens_ORSA_brief.docx",
+                       mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                        icon=":material/download:", type="primary")
     with st.container(border=True):
         html_block(f'<div class="cl-brief">\n\n{text}\n\n</div>')
