@@ -4,6 +4,7 @@ Asset side:     financed emissions and carrying amounts per sector (Munich Re an
 Liability side: average net nat-cat large losses 2021-2025 (Munich Re annual reports, restated values)
 Scenarios:      NGFS Phase V carbon prices for 2030 and a nat-cat multiplier per scenario
                 (sources and status in data/reinsurer/scenarios_2030.csv)
+Hotspots:       the nat-cat side split into peril regions (data/reinsurer/hotspots.csv, hotspots.py)
 """
 
 from dataclasses import dataclass
@@ -12,6 +13,7 @@ from pathlib import Path
 import pandas as pd
 
 from climalens.double_trap import double_trap_table
+from climalens.hotspots import load_hotspots
 from climalens.liability import PhysicalScenario
 from climalens.sector_stress import load_sector_portfolio, sector_stress_summary
 from climalens.stress_test import Scenario
@@ -39,6 +41,7 @@ class Inputs:
     natcat: pd.DataFrame
     baseline_eur: float
     equity_eur: float
+    hotspots: pd.DataFrame
 
 
 def load_inputs(data_dir: Path = DATA) -> Inputs:
@@ -57,6 +60,7 @@ def load_inputs(data_dir: Path = DATA) -> Inputs:
         natcat=natcat,
         baseline_eur=natcat["natcat_large_losses_meur"].mean() * 1e6,
         equity_eur=key.loc[key["item"] == "group_equity", "value_meur"].iloc[0] * 1e6,
+        hotspots=load_hotspots(data_dir / "hotspots.csv"),
     )
 
 

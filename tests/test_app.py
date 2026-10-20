@@ -8,7 +8,7 @@ pytest.importorskip("streamlit")
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 APP = str(Path(__file__).resolve().parents[1] / "app.py")
-PAGES = ["welcome", "results", "industries", "data", "brief", "how"]
+PAGES = ["welcome", "results", "industries", "hotspots", "data", "brief", "how"]
 
 
 @pytest.mark.parametrize("page", PAGES)
