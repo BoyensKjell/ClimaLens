@@ -18,8 +18,8 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | Double climate trap table (both sides, % of equity) | first version, tested |
 | Hand-checked gold dataset | 5 companies checked (Allianz, BASF, Siemens, SAP, RWE), 15 more in progress (20 before the midterm), about 40 later |
 | Tracing gold values back to the report text | first version, tested |
-| LLM extraction from PDF reports | planned |
-| Verification step for LLM values | planned (reuses the tracing check) |
+| LLM extraction from report texts (Gemini API) | first version, tested without the model; first real run waits for an API key |
+| Verification step for LLM values | first version, tested: quote must be on the cited line, number must fit the quote, value is compared with the gold set |
 | Streamlit web app | first version: welcome, results, industries, data check, ORSA brief, how it works |
 
 ## Quick start
@@ -31,6 +31,7 @@ python run_munichre.py  # double climate trap for Munich Re with real inputs
 python plot_munichre.py # the same results as two slide charts in output/
 python run_demo.py      # demo portfolio of fictional companies
 python run_lab.py       # trace the gold values back to the report texts in data/raw/reports/
+python run_extract.py   # let the LLM read the same reports and score it (needs GEMINI_API_KEY)
 python -m pytest        # run the tests
 ```
 
@@ -38,6 +39,7 @@ python -m pytest        # run the tests
 
 ```
 src/climalens/portfolio.py    financed emissions and portfolio footprint (PCAF)
+src/climalens/extract.py      LLM reads Scope 1-3 from a report, every answer checked against the text and the gold set
 src/climalens/stress_test.py  carbon price stress test (asset side)
 src/climalens/sector_stress.py the same stress test for a portfolio reported by sector (Munich Re)
 src/climalens/liability.py    extra natural catastrophe losses (liability side)
