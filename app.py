@@ -7,6 +7,7 @@ are mixed with the current text colour, so they work on both backgrounds.
 """
 
 import html
+import json
 import os
 import sys
 from pathlib import Path
@@ -41,6 +42,14 @@ BASE = dict(pass_through=0.3, ev_ebitda_multiple=8.0, debt_loss_factor=0.3, repr
 # Values the automatic check could not find, and the hand-data errors the first run exposed (lab 21.10).
 NOT_FOUND = {("SAP SE", "scope2_market_tco2e"): "The report prints this value as “1 kt”. One significant digit is "
              "too coarse for an automatic match, so it was confirmed by hand."}
+# Why the AI's answer differs from the gold set, for the values it did not read correctly.
+AI_NOTES = {
+    "Allianz SE": "The AI took the group totals, which include Allianz's real-estate investments. The gold set uses the "
+                  "rows “davon Geschäftstätigkeit der Allianz” (own operations only). The numbers were read correctly, "
+                  "but from the wrong row. For Scope 3 of the own operations it gave no answer.",
+}
+AI_VERDICTS = {"correct": ("ok", "✓ read correctly"), "wrong": ("miss", "✗ other row"),
+               "unverified": ("miss", "✗ quote not found"), "missed": ("miss", "✗ no answer")}
 ERRORS_CAUGHT = [
     ("SAP SE", "Scope 3", "Both Scope 3 totals (location- and market-based) were added up to 12,503 kt.",
      "Market-based value only: 6,239 kt."),
@@ -146,6 +155,13 @@ def inputs():
 @st.cache_data
 def trace_results():
     return pd.read_csv(ROOT / "data" / "gold" / "trace_results.csv")
+
+
+@st.cache_data
+def llm_results() -> tuple[pd.DataFrame, str]:
+    """The checked answers of the last real AI run (run_extract.py) and the model that gave them."""
+    gold = ROOT / "data" / "gold"
+    return pd.read_csv(gold / "llm_results.csv"), json.loads((gold / "llm_answers.json").read_text())["model"]
 
 
 # Keep the assumptions when the user moves to a page without the sliders (Streamlit
@@ -610,6 +626,8 @@ def data_page():
     html_block('<div class="cl-grid" style="--min:420px">' + "".join(cards) + "</div>")
     html_block('<p class="cl-note" style="margin-top:.6rem">Highlighted: the number in the report that matches the hand-collected value.</p>')
 
+    ai_section(tr)
+
     section("What the first run caught", NATCAT)
     html_block('<div class="cl-grid">' + "".join(
         f'<div class="cl-card" style="--c:{NATCAT}"><div class="cl-eyebrow" style="--c:{NATCAT}">{html.escape(co)} · {field}</div>'
@@ -625,8 +643,8 @@ def data_page():
     html_block('<div class="cl-grid">' + "".join(
         f'<div class="cl-card" style="--c:{VIOLET}"><span class="cl-num">{i}</span><h4>{title}</h4><p>{text}</p></div>'
         for i, (title, text) in enumerate(steps, 1)) + "</div>")
-    html_block('<p class="cl-note" style="margin-top:.8rem">The same check will later test the values a language model '
-               'extracts: the AI only counts as reliable if its numbers can be found in the report too.</p>')
+    html_block('<p class="cl-note" style="margin-top:.8rem">The same idea checks the AI: its quote must stand on the '
+               'line it names and contain its number, otherwise the answer counts as made up.</p>')
 
     with st.expander("All values as a table", icon=":material/table:"):
         show = pd.DataFrame({
@@ -644,6 +662,83 @@ def data_page():
         })
         st.download_button("Download as CSV", tr.to_csv(index=False), file_name="climalens_data_check.csv",
                            mime="text/csv", icon=":material/download:")
+
+
+def ai_section(tr: pd.DataFrame):
+    """The AI reading test: the same values, read by a language model, compared with the gold set."""
+    ai, model = llm_results()
+    scored = ai[ai["gold_tco2e"].notna()]
+    correct, total = int((scored["verdict"] == "correct").sum()), len(scored)
+    quotes, answered = int(ai["quote_ok"].sum()), int(ai["quote"].notna().sum())
+    found = int(tr["found"].sum())
+
+    section(f"AI reading test · {html.escape(model)}", VIOLET)
+    st.markdown("A language model read the same reports and returned each value with its line and a quote. It never saw "
+                "the hand-collected values. Code then checked every answer against the report and the gold set.")
+    kpis = [
+        (VIOLET, "Read correctly by the AI", f"{correct} of {total}",
+         f'<div class="cl-bar" style="--c:{VIOLET}"><span style="width:{correct / total * 100:.0f}%"></span></div>'
+         f'<div class="sub">automatic check without AI: {found} of {len(tr)}</div>'),
+        (GREEN, "Quotes found in the report", f"{quotes} of {answered}",
+         '<div class="sub">no made-up numbers: every quote stands on the line the AI named</div>'),
+        (NATCAT, "Wrong or missing", f"{total - correct}",
+         f'<div class="sub">at {html.escape(", ".join(dict.fromkeys(scored.loc[scored["verdict"] != "correct", "company"])) or "none")}'
+         "</div>"),
+    ]
+    html_block('<div class="cl-grid" style="--min:200px">' + "".join(
+        f'<div class="cl-kpi" style="--c:{c}"><div class="lbl">{label}</div><div class="val">{value}</div>{extra}</div>'
+        for c, label, value, extra in kpis) + "</div>")
+
+    head = "".join(f"<th>{FIELD_NAMES[f]}</th>" for f in FIELD_NAMES)
+    rows = []
+    for co in dict.fromkeys(ai["company"]):
+        sub = ai[ai["company"] == co].set_index("field")
+        cells = []
+        for f in FIELD_NAMES:
+            if f not in sub.index:
+                cells.append("<td></td>")
+                continue
+            r = sub.loc[f]
+            cls, label = AI_VERDICTS[r.verdict]
+            value = tonnes(r.llm_tco2e) if pd.notna(r.llm_tco2e) else "–"
+            where = f" · line {int(r.line)}" if pd.notna(r.line) else ""
+            cells.append(f'<td><div class="cl-cell {cls}"><b>{value}</b><span>{label}{where}</span></div></td>')
+        n = int((sub["verdict"] == "correct").sum())
+        color = GREEN if n == len(sub) else NATCAT
+        rows.append(f'<tr><td class="co">{html.escape(co)}</td>{"".join(cells)}'
+                    f'<td><span class="cl-score cl-tint" style="--c:{color}">{n}/{len(sub)}</span></td></tr>')
+    html_block(f'<div class="cl-scroll"><table class="cl-matrix"><thead><tr><th>Company</th>{head}<th>Score</th></tr></thead>'
+               f'<tbody>{"".join(rows)}</tbody></table></div>')
+
+    for co, note in AI_NOTES.items():
+        sub = ai[(ai["company"] == co) & (ai["verdict"] != "correct")]
+        if sub.empty:
+            continue
+        lines = "".join(f"<li>{FIELD_NAMES[r.field]}: AI {tonnes(r.llm_tco2e) if pd.notna(r.llm_tco2e) else 'no answer'}, "
+                        f"gold set {tonnes(r.gold_tco2e)}</li>" for r in sub.itertuples())
+        html_block(f'<div class="cl-verdict" style="--c:{NATCAT};margin-top:.8rem"><b>{html.escape(co)}.</b> '
+                   f'{html.escape(note)}<ul style="margin:.4rem 0 0">{lines}</ul></div>')
+    html_block(f'<div class="cl-verdict" style="--c:{VIOLET};margin-top:.8rem"><b>What this means.</b> The AI reads '
+               "numbers reliably and shows where it found them, so each value can be checked in seconds. It does not "
+               "know which table row the analysis needs: a person has to define that. The AI got SAP's “1 kt” right, the "
+               "one value the automatic check could not match.</div>")
+
+    with st.expander("AI answers with quotes", icon=":material/smart_toy:"):
+        st.dataframe(pd.DataFrame({
+            "Company": ai["company"],
+            "Value": ai["field"].map(FIELD_NAMES),
+            "AI (t CO2e)": ai["llm_tco2e"],
+            "Gold set (t CO2e)": ai["gold_tco2e"],
+            "Result": ai["verdict"],
+            "Line": ai["line"].astype("Int64"),
+            "Quote from the report": ai["quote"].fillna(""),
+        }), hide_index=True, column_config={
+            "AI (t CO2e)": st.column_config.NumberColumn(format="%,.1f"),
+            "Gold set (t CO2e)": st.column_config.NumberColumn(format="%,.1f"),
+            "Quote from the report": st.column_config.TextColumn(width="large"),
+        })
+        st.download_button("Download as CSV", ai.to_csv(index=False), file_name="climalens_ai_reading_test.csv",
+                           mime="text/csv", icon=":material/download:", key="ai_csv")
 
 
 def brief_text(t: pd.DataFrame, a: dict, inp) -> str:
@@ -688,7 +783,7 @@ def how_page():
 
     section("The five steps", GREEN)
     steps = [
-        (GREEN, "Read reports", "A language model reads the sustainability reports of the companies the reinsurer invests in and extracts their emissions.", False),
+        (GREEN, "Read reports", "A language model reads the sustainability reports of the companies the reinsurer invests in and extracts their emissions.", True),
         (TEAL, "Check values", "Every extracted number is traced back to its line in the report, like an audit procedure.", True),
         (ASSETS, "Investments", "A carbon price stress test computes how much the investments lose in value.", True),
         (NATCAT, "Underwriting", "A factor model computes how much more the reinsurer pays for natural catastrophes.", True),
@@ -696,10 +791,14 @@ def how_page():
     ]
     html_block('<div class="cl-grid" style="--min:150px">' + "".join(
         f'<div class="cl-card" style="--c:{c}"><span class="cl-num">{i}</span><h4>{title}</h4><p>{text}</p>'
-        f'<span class="cl-badge {"live" if live else "next"}">{"Working" if live else "Needs AI access"}</span></div>'
+        f'<span class="cl-badge {"live" if live else "next"}">{"Working" if live else "Next step"}</span></div>'
         for i, (c, title, text, live) in enumerate(steps, 1)) + "</div>")
-    html_block('<p class="cl-note" style="margin-top:.6rem">Steps 2–4 work with real data. Steps 1 and 5 use a language '
-               'model and follow once API access is available.</p>')
+    ai, model = llm_results()
+    scored = ai[ai["gold_tco2e"].notna()]
+    html_block(f'<p class="cl-note" style="margin-top:.6rem">Steps 1–4 work with real data. In the first real run the AI '
+               f'({html.escape(model)}) read {int((scored["verdict"] == "correct").sum())} of {len(scored)} values correctly '
+               'and made none up. Step 5 still writes the brief from a template.</p>')
+    st.page_link(PAGES["data"], label="See the AI reading test", icon=":material/fact_check:")
 
     section("Investments: the carbon price shock", ASSETS)
     st.markdown("If carbon gets more expensive, a company pays more for every tonne it emits. The part it cannot pass on "
