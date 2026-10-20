@@ -27,7 +27,7 @@ import pandas as pd
 
 from climalens.trace import NUMBER, SPACED_NUMBER, UNIT_FACTORS, match_precision, read_number
 
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.8-flash"
 TOLERANCE = 0.005  # an answer is correct if it is within 0.5 % of the hand-checked value
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 

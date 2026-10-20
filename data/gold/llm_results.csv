@@ -1,0 +1,21 @@
+company,field,llm_value,llm_unit,llm_tco2e,gold_tco2e,line,quote,quote_ok,number_ok,verdict
+Allianz SE,scope1_tco2e,"45 755,7",t,45755.7,30761.4,6921,"Scope-1-THG-Bruttoemissionen 45 755,7 53 884,6 -15,1",True,True,wrong
+Allianz SE,scope2_market_tco2e,"51 295,1",t,51295.1,4882.4,6943,"Marktbezogene Scope-2-THG-Bruttoemissionen 51 295,1 58 751,2 -12,7",True,True,wrong
+Allianz SE,scope2_location_tco2e,"178 285,0",t,178285.0,116141.7,6940,"Standortbezogene Scope-2-THG-Bruttoemissionen 178 285,0 193 109,3 -7,7",True,True,wrong
+Allianz SE,scope3_tco2e,,,,83781.5,,,False,False,missed
+BASF SE,scope1_tco2e,"15,369",Mt,15369000.0,15369000.0,9483,"Scope-1-Bruttoemissionen 15,369",True,True,correct
+BASF SE,scope2_market_tco2e,"1,901",Mt,1901000.0,1901000.0,9495,"Marktbezogene Scope-2-Bruttoemissionen 1,901",True,True,correct
+BASF SE,scope2_location_tco2e,"3,300",Mt,3300000.0,3300000.0,9494,"Bruttoemissionen 3,300",True,True,correct
+BASF SE,scope3_tco2e,"93,97",Mt,93970000.0,93970000.0,9536,"Summe Scope-3-Bruttoemissionen 93,97",True,True,correct
+Siemens AG,scope1_tco2e,288,kt,288000.0,288300.0,10435,Scope 1 THG-Bruttoemissionen - 288 - - -,True,True,correct
+Siemens AG,scope2_market_tco2e,71,kt,71000.0,70700.0,10439,Marktbasierte Scope 2 THG-Bruttoemissionen - 71 - - -,True,True,correct
+Siemens AG,scope2_location_tco2e,633,kt,633000.0,633000.0,10438,Standortbasierte Scope 2 THG-Bruttoemissionen - 633 - - -,True,True,correct
+Siemens AG,scope3_tco2e,159.144,kt,159144000.0,159144000.0,10458,"Gesamte indirekte (Scope 3) THG-Emissionen 179.222 159.144 -30% - -2,7%",True,True,correct
+SAP SE,scope1_tco2e,92,kt,92000.0,92000.0,7148,Scope 1 GHG Emissions2 92 109 –16% 112 - -,True,True,correct
+SAP SE,scope2_market_tco2e,1,kt,1000.0,1000.0,7153,Scope 2 GHG Emissions (market-based)2 1 1 50% 1 - -,True,True,correct
+SAP SE,scope2_location_tco2e,90,kt,90000.0,90000.0,7152,Scope 2 GHG Emissions (location-based)2 90 120 –25% 129 - -,True,True,correct
+SAP SE,scope3_tco2e,"6,239",kt,6239000.0,6239000.0,7158,"and Downstream (market-based) 6,239",True,True,correct
+RWE AG,scope1_tco2e,"51,89",Mt,51890000.0,51890000.0,6636,"Scope-1-THG-Bruttoemissionen 85,74 51,89 53,24 N/A N/A N/A",True,True,correct
+RWE AG,scope2_market_tco2e,"0,22",Mt,220000.0,220000.0,6640,"Marktbezogene Scope-2-THG-Bruttoemissionen 0,20 0,22 0,39 N/A N/A N/A",True,True,correct
+RWE AG,scope2_location_tco2e,"0,22",Mt,220000.0,220000.0,6639,"Standortbezogene Scope-2-THG-Bruttoemissionen 0,20 0,22 0,39 N/A N/A N/A",True,True,correct
+RWE AG,scope3_tco2e,"19,47",Mt,19470000.0,19470000.0,6642,"Gesamte indirekte (Scope-3-)THG-Bruttoemissionen 22,15 19,47 21,77 12,85 2,22 5,3%",True,True,correct

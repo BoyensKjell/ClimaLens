@@ -1,0 +1,155 @@
+{
+  "model": "gemini-3.8-flash",
+  "answers": {
+    "Allianz SE": {
+      "scope1_tco2e": {
+        "value": "45 755,7",
+        "number": 45755.7,
+        "unit": "t",
+        "line": 6921,
+        "quote": "Scope-1-THG-Bruttoemissionen 45 755,7 53 884,6 -15,1"
+      },
+      "scope2_market_tco2e": {
+        "value": "51 295,1",
+        "number": 51295.1,
+        "unit": "t",
+        "line": 6943,
+        "quote": "Marktbezogene Scope-2-THG-Bruttoemissionen 51 295,1 58 751,2 -12,7"
+      },
+      "scope2_location_tco2e": {
+        "value": "178 285,0",
+        "number": 178285.0,
+        "unit": "t",
+        "line": 6940,
+        "quote": "Standortbezogene Scope-2-THG-Bruttoemissionen 178 285,0 193 109,3 -7,7"
+      },
+      "scope3_tco2e": {
+        "value": null,
+        "number": null,
+        "unit": null,
+        "line": null,
+        "quote": null
+      }
+    },
+    "BASF SE": {
+      "scope1_tco2e": {
+        "value": "15,369",
+        "number": 15.369,
+        "unit": "Mt",
+        "line": 9483,
+        "quote": "Scope-1-Bruttoemissionen 15,369"
+      },
+      "scope2_market_tco2e": {
+        "value": "1,901",
+        "number": 1.901,
+        "unit": "Mt",
+        "line": 9495,
+        "quote": "Marktbezogene Scope-2-Bruttoemissionen 1,901"
+      },
+      "scope2_location_tco2e": {
+        "value": "3,300",
+        "number": 3.3,
+        "unit": "Mt",
+        "line": 9494,
+        "quote": "Bruttoemissionen 3,300"
+      },
+      "scope3_tco2e": {
+        "value": "93,97",
+        "number": 93.97,
+        "unit": "Mt",
+        "line": 9536,
+        "quote": "Summe Scope-3-Bruttoemissionen 93,97"
+      }
+    },
+    "Siemens AG": {
+      "scope1_tco2e": {
+        "value": "288",
+        "number": 288,
+        "unit": "kt",
+        "line": 10435,
+        "quote": "Scope 1 THG-Bruttoemissionen - 288 - - -"
+      },
+      "scope2_market_tco2e": {
+        "value": "71",
+        "number": 71,
+        "unit": "kt",
+        "line": 10439,
+        "quote": "Marktbasierte Scope 2 THG-Bruttoemissionen - 71 - - -"
+      },
+      "scope2_location_tco2e": {
+        "value": "633",
+        "number": 633,
+        "unit": "kt",
+        "line": 10438,
+        "quote": "Standortbasierte Scope 2 THG-Bruttoemissionen - 633 - - -"
+      },
+      "scope3_tco2e": {
+        "value": "159.144",
+        "number": 159144,
+        "unit": "kt",
+        "line": 10458,
+        "quote": "Gesamte indirekte (Scope 3) THG-Emissionen 179.222 159.144 -30% - -2,7%"
+      }
+    },
+    "SAP SE": {
+      "scope1_tco2e": {
+        "value": "92",
+        "number": 92,
+        "unit": "kt",
+        "line": 7148,
+        "quote": "Scope 1 GHG Emissions2 92 109 –16% 112 - -"
+      },
+      "scope2_market_tco2e": {
+        "value": "1",
+        "number": 1,
+        "unit": "kt",
+        "line": 7153,
+        "quote": "Scope 2 GHG Emissions (market-based)2 1 1 50% 1 - -"
+      },
+      "scope2_location_tco2e": {
+        "value": "90",
+        "number": 90,
+        "unit": "kt",
+        "line": 7152,
+        "quote": "Scope 2 GHG Emissions (location-based)2 90 120 –25% 129 - -"
+      },
+      "scope3_tco2e": {
+        "value": "6,239",
+        "number": 6239,
+        "unit": "kt",
+        "line": 7158,
+        "quote": "and Downstream (market-based) 6,239"
+      }
+    },
+    "RWE AG": {
+      "scope1_tco2e": {
+        "value": "51,89",
+        "number": 51.89,
+        "unit": "Mt",
+        "line": 6636,
+        "quote": "Scope-1-THG-Bruttoemissionen 85,74 51,89 53,24 N/A N/A N/A"
+      },
+      "scope2_market_tco2e": {
+        "value": "0,22",
+        "number": 0.22,
+        "unit": "Mt",
+        "line": 6640,
+        "quote": "Marktbezogene Scope-2-THG-Bruttoemissionen 0,20 0,22 0,39 N/A N/A N/A"
+      },
+      "scope2_location_tco2e": {
+        "value": "0,22",
+        "number": 0.22,
+        "unit": "Mt",
+        "line": 6639,
+        "quote": "Standortbezogene Scope-2-THG-Bruttoemissionen 0,20 0,22 0,39 N/A N/A N/A"
+      },
+      "scope3_tco2e": {
+        "value": "19,47",
+        "number": 19.47,
+        "unit": "Mt",
+        "line": 6642,
+        "quote": "Gesamte indirekte (Scope-3-)THG-Bruttoemissionen 22,15 19,47 21,77 12,85 2,22 5,3%"
+      }
+    }
+  }
+}
