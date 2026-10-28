@@ -21,12 +21,14 @@ Research project in the course *Sustainability and ESG Data Analytics* (NTPU, Fa
 | LLM extraction from report texts (Gemini API) | first version, tested without the model; first real run waits for an API key |
 | Verification step for LLM values | first version, tested: quote must be on the cited line, number must fit the quote, value is compared with the gold set |
 | Streamlit web app | first version: welcome, results, industries, data check, ORSA brief, how it works |
+| Gradio app | second, smaller front end on the same model (results, industries, data check, AI reading test, ORSA brief), ready for Hugging Face Spaces |
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py    # the web app in the browser
+python gradio_app.py    # the same results as a small Gradio app (pip install gradio first)
 python run_munichre.py  # double climate trap for Munich Re with real inputs
 python plot_munichre.py # the same results as two slide charts in output/
 python run_demo.py      # demo portfolio of fictional companies
@@ -46,6 +48,7 @@ src/climalens/liability.py    extra natural catastrophe losses (liability side)
 src/climalens/double_trap.py  both sides per scenario in % of equity
 src/climalens/munichre.py     Munich Re inputs and base-case assumptions (shared by scripts and app)
 app.py                        Streamlit web app
+gradio_app.py                 Gradio app (same model, for Hugging Face Spaces)
 src/climalens/trace.py        find each emissions value in the report text (audit-style check)
 data/gold/                    hand-checked emissions values (the reference)
 data/reinsurer/               Munich Re nat-cat losses, equity, sector portfolio and 2030 scenarios
