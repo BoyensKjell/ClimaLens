@@ -22,7 +22,7 @@ INTRO = (
     "and whether AI can deliver ESG data that an auditor would sign off on."
 )
 GITHUB = "https://github.com/BoyensKjell"
-GROUP_GITHUB = ""  # e.g. "https://github.com/greenproof-ntpu" once the group account exists
+GROUP_GITHUB = "https://github.com/ntpuesggreenproof-lgtm"
 LINKEDIN = "https://www.linkedin.com/in/kjell-boyens-b5b856342"
 EMAIL = "kjell.boyens@myhsba.de"
 
