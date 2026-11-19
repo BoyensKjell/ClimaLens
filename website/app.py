@@ -13,17 +13,18 @@ import streamlit as st
 # PROFILE: edit texts and links here
 # --------------------------------------------------------------------------- #
 NAME = "Kjell Boyens"
-TAGLINE = "Business student · Finance & sustainability risk · Building with data and AI"
+TAGLINE = "Business student (HSBA Hamburg) · Finance & sustainability risk · Building with data and AI"
 INTRO = (
-    "I study business administration with a focus on finance and I am heading towards audit "
-    "and consulting. This semester I take *Sustainability and ESG Data Analytics* at National "
-    "Taipei University (NTPU). My interest: where climate risk turns into balance-sheet risk, "
+    "I study business administration at HSBA Hamburg School of Business Administration, with a "
+    "focus on finance, and I am heading towards audit and consulting. This semester I am an "
+    "exchange student at National Taipei University (NTPU) in Taiwan and take *Sustainability "
+    "and ESG Data Analytics*. My interest: where climate risk turns into balance-sheet risk, "
     "and whether AI can deliver ESG data that an auditor would sign off on."
 )
 GITHUB = "https://github.com/BoyensKjell"
 GROUP_GITHUB = ""  # e.g. "https://github.com/greenproof-ntpu" once the group account exists
 LINKEDIN = "https://www.linkedin.com/in/kjell-boyens-b5b856342"
-EMAIL = ""         # optional
+EMAIL = "kjell.boyens@myhsba.de"
 
 CLIMALENS_APP = "https://climalens.streamlit.app"
 CLIMALENS_REPO = "https://github.com/BoyensKjell/ClimaLens"
