@@ -22,7 +22,7 @@ INTRO = (
 )
 GITHUB = "https://github.com/BoyensKjell"
 GROUP_GITHUB = ""  # e.g. "https://github.com/greenproof-ntpu" once the group account exists
-LINKEDIN = ""      # optional, e.g. "https://www.linkedin.com/in/..."
+LINKEDIN = "https://www.linkedin.com/in/kjell-boyens-b5b856342"
 EMAIL = ""         # optional
 
 CLIMALENS_APP = "https://climalens.streamlit.app"
